@@ -42,7 +42,7 @@ class DirectRandomForest(DirectClassicML):
         self.model = RandomForestRegressor(max_leaf_nodes=max_leaf_nodes)
 
 
-class SmallRandomForest:
+class IndependentRandomForest:
     def __init__(self):
         self.model1, self.model2 = None, None
 
@@ -100,7 +100,7 @@ class DirectLightGBM:
 
 
 
-class SmallLightGBM:
+class IndependentLightGBM:
     def __init__(self):
         self.model1, self.model2 = None, None
 

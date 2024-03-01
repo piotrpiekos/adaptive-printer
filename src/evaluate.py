@@ -1,13 +1,13 @@
-import torch
-
 import numpy as np
 import os
 
 from src.models.simple_ml import Oracle, Naive, DirectRandomForest, DirectLightGBM
-from src.models.simple_ml import SmallLightGBM, SmallRandomForest
+from src.models.simple_ml import IndependentLightGBM, IndependentRandomForest
 from src.Simulator import RealSimulator
 
 import pandas as pd
+
+import argparse
 
 np.random.seed(0)
 
@@ -108,18 +108,14 @@ def evaluate_model_adapt_to_body(model, method, split='val'):
     data_for_csv = {'names': [], 'errors': []}
     print('files to visit: ', len(files))
     for i ,file in enumerate(files):
-        if i % 5 == 0:
+        if i % 20 == 0:
             print('visiting file number ', i)
         file_path = os.path.join(files_directory, file)
-        #print(file_path)
         data = np.genfromtxt(file_path, delimiter=',')
-        if len(data) == 0:
-            continue
 
         all_trajectories_counts = np.unique(data[:, 3], return_counts=True)
         all_trajectories = all_trajectories_counts[0]
         longest_traj_id = all_trajectories[all_trajectories_counts[1].argmax()]
-        #print('longest traj length: ', all_trajectories_counts[1].max())
 
         longest_traj = data[data[:, 3] == longest_traj_id]
         model.adapt_to_traj(longest_traj)
@@ -154,16 +150,31 @@ def evaluate_model_adapt_to_body(model, method, split='val'):
     return np.mean(losses)
 
 
+METHODS = {
+    'naive': Naive,
+    'oracle': Oracle,
+    'independent_rf': IndependentRandomForest,
+    'rf': DirectRandomForest,
+    'independent_lgb': IndependentLightGBM,
+    'lgb': DirectLightGBM
+}
+
 if __name__ == '__main__':
     files_directory = os.path.join('data', 'dataset')
-    files = np.random.choice(os.listdir(files_directory), 500, replace=False)
-
-    fast = False
-    print('Naive: ', evaluate_model_adapt_to_body(Naive(), 'naive'))
-    print('Oracle: ', evaluate_model_adapt_to_body(Oracle(), 'oracle'))
-
+    files = os.listdir(files_directory)
     fast = True
-    print('small rf: ', evaluate_model_adapt_to_body(SmallRandomForest(), 'small_rf'))
-    print('full rf: ', evaluate_model_adapt_to_body(DirectRandomForest(), 'full_rf'))
-    print('lgb small: ', evaluate_model_adapt_to_body(SmallLightGBM(), 'lgb'))
-    print('lgb full: ', evaluate_model_adapt_to_body(DirectLightGBM(), 'lgb'))
+
+    parser = argparse.ArgumentParser(
+        prog='AdaptivePrinterEvaluator',
+        description='Evaluate models for the adaptive printer generation. Calculates ABRMSE over chosen model')
+    parser.add_argument('--model', help='name of model', type=str, required=True, choices=METHODS.keys())
+
+    args = parser.parse_args()
+    model_class_name, model_class = args.model, METHODS[args.model]
+
+    print('Calculating ABRMSE for ', model_class_name)
+    abrmse = evaluate_model_adapt_to_body(model_class(), model_class_name)
+    print('ABRMSE: ', abrmse)
+    out_path = os.path.join('results', f'{model_class_name}.out')
+    with open(out_path, 'w') as f:
+        f.write(abrmse)
