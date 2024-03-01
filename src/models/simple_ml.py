@@ -154,7 +154,6 @@ class Oracle:
         return np.stack(diffs)
 
 
-
 class Naive:
     def __init__(self):
         pass
@@ -164,3 +163,12 @@ class Naive:
 
     def __call__(self, state, control):
         return control[0],  control[1]
+
+    def batch_call(self, inputs):
+        diffs = []
+        for row in inputs:
+            opt_state = row[:2]
+            control = row[2:]
+            diff = self(opt_state, control)
+            diffs.append(diff)
+        return np.stack(diffs)
