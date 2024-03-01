@@ -145,6 +145,7 @@ def evaluate_model_adapt_to_body(model, method, split='val'):
         data_for_csv['names'].append(file)
         data_for_csv['errors'].append(err)
 
+        losses.append(err)
     pd.DataFrame.from_dict(data_for_csv).to_csv(f'results/{method}_dist_with_names.csv')
     np.savetxt('results/distribution2.csv', np.array(losses))
     return np.mean(losses)
@@ -163,6 +164,9 @@ if __name__ == '__main__':
     files_directory = os.path.join('data', 'dataset')
     files = os.listdir(files_directory)
     fast = True
+    # fast determines how to behave when the control is greater than 1.
+    # It can either approximate linearly distortion of the model at the current position (fast == True)
+    # or calculate it exactly (fast == False).
 
     parser = argparse.ArgumentParser(
         prog='AdaptivePrinterEvaluator',
