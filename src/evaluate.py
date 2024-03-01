@@ -145,8 +145,8 @@ def evaluate_model_adapt_to_body(model, method, split='val'):
         data_for_csv['names'].append(file)
         data_for_csv['errors'].append(err)
 
-    pd.DataFrame.from_dict(data_for_csv).to_csv(f'data/results/{method}_dist_with_names.csv')
-    np.savetxt('data/results/distribution2.csv', np.array(losses))
+    pd.DataFrame.from_dict(data_for_csv).to_csv(f'results/{method}_dist_with_names.csv')
+    np.savetxt('results/distribution2.csv', np.array(losses))
     return np.mean(losses)
 
 
