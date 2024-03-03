@@ -181,4 +181,4 @@ if __name__ == '__main__':
     print('ABRMSE: ', abrmse)
     out_path = os.path.join('results', f'{model_class_name}.out')
     with open(out_path, 'w') as f:
-        f.write(abrmse)
+        f.write(f'ABRMSE: {abrmse}')
