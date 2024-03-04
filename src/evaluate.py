@@ -113,7 +113,10 @@ def evaluate_model_adapt_to_body(model, method, split='val'):
         file_path = os.path.join(files_directory, file)
         data = np.genfromtxt(file_path, delimiter=',')
 
-        all_trajectories_counts = np.unique(data[:, 3], return_counts=True)
+        try:
+            all_trajectories_counts = np.unique(data[:, 3], return_counts=True)
+        except:
+            print(file)
         all_trajectories = all_trajectories_counts[0]
         longest_traj_id = all_trajectories[all_trajectories_counts[1].argmax()]
 
