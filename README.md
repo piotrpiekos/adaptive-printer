@@ -19,10 +19,11 @@ Link to the paper:
 
 All scripts are called from the main project directory.
 
-The zipped dataset is in the repository. However, after cloning it has to be unzipped
+The dataset is uploaded on the external storage. To download it and unzip use the `get_data.sh` script
+
 
 ```
-unzip data/compressed/dataset.zip -d data/
+bash get_data.sh
 ```
 
 To reproduce the results run

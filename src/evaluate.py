@@ -111,7 +111,11 @@ def evaluate_model_adapt_to_body(model, method, split='val'):
         if i % 20 == 0:
             print('visiting file number ', i)
         file_path = os.path.join(files_directory, file)
-        data = np.genfromtxt(file_path, delimiter=',')
+        try:
+            data = np.genfromtxt(file_path, delimiter=',')
+        except:
+            print('failure loading, file: ', file)
+            raise Exception(f'failure loading file: {file}')
 
         try:
             all_trajectories_counts = np.unique(data[:, 3], return_counts=True)
